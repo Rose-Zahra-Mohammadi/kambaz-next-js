@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 export default function Lab1() {
   return (
     <div id="wd-lab1">
@@ -145,11 +145,11 @@ This is the third paragraph. Wrap each paragraph with the paragraph tag to tell 
       <div id="wd-images">
   <h4>Image tag</h4>
   Loading an image from the internet: <br />
-  <img id="wd-starship" width="400px"   src="https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg" />
+  <Image id="wd-starship" width="400px" alt="Starship" src="https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg" />
   <br />
   Loading a local image:
   <br />
-  <img id="wd-teslabot" src="/images/teslabot.jpg" height="200px" /></div>
+  <Image id="wd-teslabot" src="/images/teslabot.jpg" height="200px" alt="Tesla Bot" /></div>
   <div id="wd-forms">
   <h4>Form Elements</h4>
   <form id="wd-text-fields">
