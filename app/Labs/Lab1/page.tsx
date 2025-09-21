@@ -166,30 +166,6 @@ export default function Lab1() {
             defaultValue="Wonderland"
             title="The last name"
             id="wd-text-fields-last-name" />
-          <h4>Other HTML field types</h4>
-
-          <label htmlFor="wd-text-fields-email"> Email: </label>
-          <input type="email"
-            placeholder="jdoe@somewhere.com"
-            id="wd-text-fields-email" /><br />
-
-          <label htmlFor="wd-text-fields-salary-start"> Starting salary:</label>
-          <input type="number"
-            defaultValue="100000"
-            placeholder="1000"
-            id="wd-text-fields-salary-start" /><br />
-
-          <label htmlFor="wd-text-fields-rating"> Rating: </label>
-          <input type="range"
-            defaultValue="4"
-            max="5"
-            placeholder="Doe"
-            id="wd-text-fields-rating" /><br />
-
-          <label htmlFor="wd-text-fields-dob"> Date of birth: </label>
-          <input type="date"
-            defaultValue="2000-01-21"
-            id="wd-text-fields-dob" /><br />
           <h5>Text boxes</h5>
           <label>Biography:</label><br />
           <textarea id="wd-textarea" cols={30} rows={10}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</textarea>
@@ -251,6 +227,30 @@ export default function Lab1() {
         <option value="SCIFI" selected> Science Fiction </option>
         <option value="FANTASY">         Fantasy         </option>
       </select>
+                <h4>Other HTML field types</h4>
+
+          <label htmlFor="wd-text-fields-email"> Email: </label>
+          <input type="email"
+            placeholder="jdoe@somewhere.com"
+            id="wd-text-fields-email" /><br />
+
+          <label htmlFor="wd-text-fields-salary-start"> Starting salary:</label>
+          <input type="number"
+            defaultValue="100000"
+            placeholder="1000"
+            id="wd-text-fields-salary-start" /><br />
+
+          <label htmlFor="wd-text-fields-rating"> Rating: </label>
+          <input type="range"
+            defaultValue="4"
+            max="5"
+            placeholder="Doe"
+            id="wd-text-fields-rating" /><br />
+
+          <label htmlFor="wd-text-fields-dob"> Date of birth: </label>
+          <input type="date"
+            defaultValue="2000-01-21"
+            id="wd-text-fields-dob" /><br />
       <h4>Anchor tag</h4>
       Please
       <a href="https://www.lipsum.com" id="wd-lipsum"> click here </a>

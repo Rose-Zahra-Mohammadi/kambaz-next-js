@@ -26,6 +26,10 @@ export default function AssignmentEditor() {
                     <td>
                         <select id="wd-group">
                             <option value="1">Assignements</option>
+                            <option value="2">Quizzes</option>
+                            <option value="3">Exams</option>
+                            <option value="4">Labs</option>
+                            <option value="5">Projects</option>
                         </select>
                     </td>
                 </tr>
@@ -37,6 +41,10 @@ export default function AssignmentEditor() {
                     <td>
                         <select id="wd-display-grade-as">
                             <option value="1">Percentage</option>
+                            <option value="2">Points</option>
+                            <option value="3">Complete/Incomplete</option>
+                            <option value="4">Letter Grade</option>
+                            <option value="5">GPA Scale</option>
                         </select>
 
                     </td>
@@ -48,6 +56,8 @@ export default function AssignmentEditor() {
                 <td>
                     <select id="wd-submission-type">
                         <option value="1">Online</option>
+                        <option value="2">On Paper</option>
+                        <option value="3">External Tool</option>
                     </select><br /><br />
                     <label>Online Entry Options</label><br />
 
@@ -85,7 +95,7 @@ export default function AssignmentEditor() {
                         <label>Due</label>
                     </td>
                     <td>
-                        <input id="wd-due-date" defaultValue="2024-13-05" type="date" />
+                        <input id="wd-due-date" defaultValue="2025-05-25" type="date" />
                     </td>
                 </tr><br />
                 <tr>
@@ -93,13 +103,13 @@ export default function AssignmentEditor() {
                         <label>Available from</label>
                     </td>
                     <td>
-                        <input id="wd-available-from" defaultValue="2025-06-05" type="date" />
+                        <input id="wd-available-from" defaultValue="2025-05-01" type="date" />
                     </td>
                     <td>
                         <label>Until</label>
                     </td>
                     <td>
-                        <input id="wd-available-until"  defaultValue="2024-20-05" type="date" />
+                        <input id="wd-available-until" defaultValue="2025-05-25" type="date" />
                     </td>
                 </tr>
                 <button>Save</button>
