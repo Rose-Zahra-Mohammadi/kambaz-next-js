@@ -24,7 +24,7 @@ export default function AssignmentEditor() {
                         <label>Assignment Group</label>
                     </td>
                     <td>
-                        <select>
+                        <select id="wd-group">
                             <option value="1">Assignements</option>
                         </select>
                     </td>
@@ -35,7 +35,7 @@ export default function AssignmentEditor() {
                         <label htmlFor="wd-points">Display Grade as</label>
                     </td>
                     <td>
-                        <select>
+                        <select id="wd-display-grade-as">
                             <option value="1">Percentage</option>
                         </select>
 
@@ -46,27 +46,27 @@ export default function AssignmentEditor() {
                     <label htmlFor="wd-points">Submission type</label>
                 </td>
                 <td>
-                    <select>
+                    <select id="wd-submission-type">
                         <option value="1">Online</option>
                     </select><br /><br />
                     <label>Online Entry Options</label><br />
 
-                    <input type="checkbox" />
+                    <input id="wd-text-entry" type="checkbox" />
                     <label>Text Entry</label><br />
 
-                    <input type="checkbox" />
+                    <input id="wd-website-url" type="checkbox" />
                     <label>Website URL</label><br />
 
                     <input type="checkbox" />
                     <label>Media URL</label><br />
 
-                    <input type="checkbox" />
+                    <input id="wd-media-recordings" type="checkbox" />
                     <label>Media Recordings</label><br />
 
-                    <input type="checkbox" />
+                    <input id="wd-student-annotation" type="checkbox" />
                     <label>Student Annotation</label><br />
 
-                    <input type="checkbox" />
+                    <input id="wd-file-upload" type="checkbox" />
                     <label>File Uploads</label>
                 </td>
 
