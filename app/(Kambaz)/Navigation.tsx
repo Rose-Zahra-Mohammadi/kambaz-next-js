@@ -11,7 +11,7 @@ export default function KambazNavigation() {
               id="wd-kambaz-navigation">
      <ListGroupItem className="bg-black border-0 text-center" as="a"
               target="_blank" href="https://www.northeastern.edu/" id="wd-neu-link">
-       <Image src="/images/NEU.png" width={75} alt="Northeastern University" />
+       <Image src="/images/NEU.png" width={75} height={75} alt="Northeastern University" />
      </ListGroupItem><br />
      <ListGroupItem className="border-0 bg-black text-center">
        <Link href="/Account" id="wd-account-link" className="text-white text-decoration-none">
@@ -28,7 +28,7 @@ export default function KambazNavigation() {
        </Link>
      </ListGroupItem><br />
           <ListGroupItem className="border-0 bg-black text-center">
-       <Link href="/Courses" id="wd-courses-link" className="text-white text-decoration-none">
+       <Link href="/Dashboard" id="wd-courses-link" className="text-white text-decoration-none">
          <LiaBookSolid className="fs-1 text-danger" />
          <br />
          Courses

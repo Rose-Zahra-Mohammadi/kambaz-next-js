@@ -1,8 +1,7 @@
-import { Form, FormLabel, FormControl, FormSelect, FormCheck, InputGroup, Row, Col, Button } from 'react-bootstrap';
+import { Form, FormLabel, FormControl, FormSelect, FormCheck, InputGroup, Button } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 export default function BootstrapForms() { 
-    console.log("Inputgrop example:", InputGroup);
     return (
 <div><div id="wd-css-styling-forms">
   <h2>Forms</h2>
@@ -39,16 +38,17 @@ export default function BootstrapForms() {
 <div id="wd-css-styling-addons">
   <h3>Addons</h3>
   <InputGroup className="mb-3">
-    {/* <InputGroupText>$</InputGroupText>
-    <InputGroupText>0.00</InputGroupText> */}
+    <span className="input-group-text">$</span>
+    <span className="input-group-text">0.00</span>
     <FormControl />
   </InputGroup>
   <InputGroup>
     <FormControl />
-    {/* <InputGroupText>$</InputGroupText>
-    <InputGroupText>0.00</InputGroupText> */}
+    <span className="input-group-text">$</span>
+    <span className="input-group-text">0.00</span>
   </InputGroup>
 </div>
+
 
 <div id="wd-css-responsive-forms-1">
    <h3>Responsive forms</h3>

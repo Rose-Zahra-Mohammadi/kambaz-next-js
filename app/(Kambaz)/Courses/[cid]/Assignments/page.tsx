@@ -31,7 +31,12 @@ export default function Assignments() {
               <IoEllipsisVertical className="fs-4" />
             </div>
           </DropdownToggle>
-        <DropdownMenu className="w-100 mt-0" style={{ transform: 'translate3d(0px, 0px, 0px) !important', left: '0 !important', right: '0 !important' }}>
+        <DropdownMenu className="w-100 mt-0" style={{ 
+          transform: 'translate3d(0px, 0px, 0px) !important', 
+          left: '0 !important', 
+          right: '0 !important',
+          borderLeft: '4px solid green'
+        }}>
         <DropdownItem className="wd-assignment-list-item" style={{ whiteSpace: 'normal', padding: '10px 15px' }}>
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">

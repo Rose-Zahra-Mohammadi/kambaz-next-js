@@ -5,31 +5,51 @@ import { Button, FormControl, FormLabel, FormSelect, FormCheck } from "react-boo
 export default function AssignmentEditor() {
     return (
         <div id="wd-assignments-editor">
-            <div className="mb-3">
-                <FormLabel htmlFor="wd-name">Assignment Name</FormLabel>
-                <FormControl id="wd-name" defaultValue="A1 - ENV + HTML" />
-            </div>
-            
-            <div className="mb-3">
-                <FormLabel htmlFor="wd-description">Description</FormLabel>
-                <FormControl as="textarea" id="wd-description" rows={5}>
-                    The assignment is available online Submit a link to the landing page of your web application running on Netlify.
-                    The landing page should include the following: Your full name and section Link to the Kanbas application.
-                    Links to all relevent source code repositories.
-                    The kanbas application should include a link to navigate back to the landing page.
-                </FormControl>
-            </div>
-            
             <div className="row mb-3">
-                <div className="col-md-6">
+                <div className="col-md-2">
+                </div>
+                <div className="col-md-4">
+                    <FormLabel htmlFor="wd-name">Assignment Name</FormLabel>
+                    <FormControl id="wd-name" defaultValue="A1 - ENV + HTML" />
+                </div>
+            </div>
+            
+            <div className="row mb-3 align-items-start">
+                <div className="col-md-2 text-end">
+                </div>
+                <div className="col-md-4">
+                    <div 
+                        className="form-control" 
+                        style={{ 
+                            height: 'auto', 
+                            minHeight: '120px', 
+                            padding: '12px',
+                            backgroundColor: '#f8f9fa',
+                            border: '1px solid #ced4da'
+                        }}
+                    >
+                        The assignment is <span style={{color: 'red'}}>available online</span> Submit a link to the landing page of your web application running on Netlify.
+                        The landing page should include the following: Your full name and section Link to the Kanbas application.
+                        Links to all relevent source code repositories.
+                        The kanbas application should include a link to navigate back to the landing page.
+                    </div>
+                </div>
+            </div>
+            
+            <div className="row mb-3 align-items-center">
+                <div className="col-md-2 text-end">
                     <FormLabel htmlFor="wd-points">Points</FormLabel>
+                </div>
+                <div className="col-md-4">
                     <FormControl id="wd-points" defaultValue={100} />
                 </div>
             </div>
             
-            <div className="row mb-3">
-                <div className="col-md-6">
+            <div className="row mb-3 align-items-center">
+                <div className="col-md-2 text-end">
                     <FormLabel htmlFor="wd-group">Assignment Group</FormLabel>
+                </div>
+                <div className="col-md-4">
                     <FormSelect id="wd-group">
                         <option value="1">Assignments</option>
                         <option value="2">Quizzes</option>
@@ -40,9 +60,11 @@ export default function AssignmentEditor() {
                 </div>
             </div>
             
-            <div className="row mb-3">
-                <div className="col-md-6">
+            <div className="row mb-3 align-items-center">
+                <div className="col-md-2 text-end">
                     <FormLabel htmlFor="wd-display-grade-as">Display Grade as</FormLabel>
+                </div>
+                <div className="col-md-4">
                     <FormSelect id="wd-display-grade-as">
                         <option value="1">Percentage</option>
                         <option value="2">Points</option>
@@ -53,9 +75,11 @@ export default function AssignmentEditor() {
                 </div>
             </div>
             
-            <div className="row mb-3">
-                <div className="col-md-8">
-                    <FormLabel htmlFor="wd-submission-type">Submission type</FormLabel>
+            <div className="row mb-3 align-items-start">
+                <div className="col-md-2 text-end">
+                    <FormLabel htmlFor="wd-submission-type">Submission Type</FormLabel>
+                </div>
+                <div className="col-md-4">
                     <div className="border p-3 bg-light rounded">
                         <FormSelect id="wd-submission-type" className="mb-3">
                             <option value="1">Online</option>
@@ -78,9 +102,11 @@ export default function AssignmentEditor() {
                 </div>
             </div>
             
-            <div className="row mb-3">
-                <div className="col-md-8">
+            <div className="row mb-3 align-items-start">
+                <div className="col-md-2 text-end">
                     <FormLabel htmlFor="wd-assign-to">Assign</FormLabel>
+                </div>
+                <div className="col-md-4">
                     <div className="border p-3 bg-light rounded">
                         <FormLabel className="fw-bold mb-2">Assign to</FormLabel>
                         <FormControl id="wd-assign-to" defaultValue="Everyone" className="mb-3" />
@@ -107,7 +133,7 @@ export default function AssignmentEditor() {
             </div>
             
             <div className="row">
-                <div className="col-md-8">
+                <div className="col-md-4">
                     <div className="d-flex justify-content-end gap-2 mt-4">
                         <Button variant="secondary">Cancel</Button>
                         <Button variant="danger">Save</Button>
