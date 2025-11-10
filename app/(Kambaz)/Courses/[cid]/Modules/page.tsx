@@ -10,7 +10,7 @@ import ModuleControlButtons from "./ModuleControlButtons";
 import LessonControlButtons from "./LessonControlButtons";
 import { ParamValue } from "next/dist/server/request/params";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@reduxjs/toolkit/query";
+import { RootState } from "../../../store";
 
 type Lesson = {
   _id?: string;
