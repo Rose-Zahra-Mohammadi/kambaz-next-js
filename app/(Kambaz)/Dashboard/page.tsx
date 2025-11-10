@@ -1,18 +1,17 @@
 "use client"
-import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import Link from "next/link";
 import * as db from "../Database";
 import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, Button, FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
+import { addNewCourse, Course, deleteCourse, updateCourse } from "../Courses/reducer";
 export default function Dashboard() {
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
   const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
   const { enrollments } = db;
   const dispatch = useDispatch();
-  const [course, setCourse] = useState<any>({
+  const [course, setCourse] = useState<Course>({
     _id: "0", name: "New Course", number: "New Number",
     startDate: "2023-09-10", endDate: "2023-12-15",
     image: "/images/reactjs.jpg", description: "New Description"

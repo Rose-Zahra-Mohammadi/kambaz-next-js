@@ -12,7 +12,7 @@ export default function TodoList() {
             <h2>Todo List</h2>
             <ListGroup>
                 <TodoForm />
-                {todos.map((todo: any) => (
+                {todos.map((todo) => (
                     <TodoItem key={todo.id} todo={todo} />
                 ))}
             </ListGroup>
