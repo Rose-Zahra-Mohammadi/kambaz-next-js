@@ -32,14 +32,18 @@ export default function Modules() {
   const { cid } = useParams();
   const [moduleName, setModuleName] = useState("");
   const { modules } = useSelector((state: RootState) => state.moduleReducer);
+  const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
+  const isFaculty = currentUser?.role === "FACULTY";
   const dispatch = useDispatch()
   return (
     <div className="wd-modules">
+      {isFaculty && (
       <ModulesControls  moduleName={moduleName} setModuleName={setModuleName} 
       addModule={()=>{
         dispatch(addModule({ name: moduleName, course: cid}));
         setModuleName("");
-        } }/><br /><br /><br /><br />
+        } }/>)}
+        <br /><br /><br /><br />
       <ListGroup className="rounded-0" id="wd-modules">
         {modules
           .filter((module: Module) => module.course === cid)
@@ -63,9 +67,12 @@ export default function Modules() {
                 <ModuleControlButtons
                   moduleId={module._id}
                   deleteModule={(moduleId) => {
+                    if (!isFaculty) return;
                     dispatch(deleteModule(moduleId));
                   }}
+                  isFaculty = {isFaculty}
                   editModule={(moduleId)=> {
+                    if (!isFaculty) return;
                     dispatch(editModule(moduleId))
                   }} />
               </div>
