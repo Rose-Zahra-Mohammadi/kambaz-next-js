@@ -21,7 +21,6 @@ export default function Dashboard() {
     endDate: "2023-12-15",
     image: "/images/reactjs.jpg",
     description: "New Description",
-    creator: currentUser?._id || "",
   });
 
   const [showAll, setShowAll] = useState(false); // toggle enrollments/all
