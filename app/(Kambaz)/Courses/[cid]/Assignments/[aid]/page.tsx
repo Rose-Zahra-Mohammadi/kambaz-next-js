@@ -9,13 +9,6 @@ import * as db from "../../../../Database"
 import { FormControl, FormLabel, FormSelect, FormCheck } from "react-bootstrap";
 import { RootState } from "../../../../../(Kambaz)/store";
 
-interface User {
-  _id: string;
-  name: string;
-  email?: string;
-  role: "STUDENT" | "FACULTY" | string;
-}
-
 export default function AssignmentEditor() { 
   const { cid, aid } = useParams();
   const router = useRouter();
