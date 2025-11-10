@@ -4,7 +4,7 @@ import * as db from "../../../Database";
 import { BsGripVertical, BsCaretRightFill } from "react-icons/bs"; 
 import { FaPenToSquare } from "react-icons/fa6";
 import { IoEllipsisVertical } from "react-icons/io5";
-import { Button, Dropdown, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem, DropdownItem, DropdownDivider } from "react-bootstrap";
+import { Button, Dropdown, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem, DropdownItem } from "react-bootstrap";
 import LessonControlButtons from "../Modules/LessonControlButtons";
 import AssignmentControlButtons from "./AssignmentControlButtons";
 

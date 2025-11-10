@@ -7,16 +7,21 @@ import { addAssignment, deleteAssignment, updateAssignment } from "../reducer";
 import Link from "next/link";
 import * as db from "../../../../Database"
 import { FormControl, FormLabel, FormSelect, FormCheck } from "react-bootstrap";
-import { stat } from "fs";
+import { RootState } from "../../../../../(Kambaz)/store";
 
-export default function AssignmentEditor() {
+interface User {
+  _id: string;
+  name: string;
+  email?: string;
+  role: "STUDENT" | "FACULTY" | string;
+}
+
+export default function AssignmentEditor() { 
   const { cid, aid } = useParams();
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // get assignment from redux
-  const assignments = useSelector((state: any) => state.assignmentReducer.assignments);
-  const currentUser = useSelector((state: any) => state.accountReducer.currentUser);
+  const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
   const isFaculty = currentUser?.role === "FACULTY";
 
   const existingAssignment = db.assignments.find(assignment => assignment._id === aid);
@@ -205,7 +210,7 @@ export default function AssignmentEditor() {
         <div className="col-md-4">
           <div className="border p-3 bg-light rounded">
             <FormLabel className="fw-bold mb-2">Assign to</FormLabel>
-            <FormControl id="wd-assign-to" defaultValue="Everyone" className="mb-3" />
+            <FormControl id="wd-assign-to" value="Everyone" className="mb-3" />
 
             <div className="row">
               <div className="col-md-6">
@@ -246,10 +251,10 @@ export default function AssignmentEditor() {
       <div className="row">
         <div className="col-md-4">
           <div className="d-flex justify-content-end gap-2 mt-4">
-            <Link href={`/Courses/${cid}/Assignments`} className="btn btn-secondary">
+            <Link href={`/Courses/${cid}/Assignments`} className="btn btn-secondary" onClick={handleDelete}>
               Cancel
             </Link>
-            <Link href={`/Courses/${cid}/Assignments`} className="btn btn-danger">
+            <Link href={`/Courses/${cid}/Assignments`} className="btn btn-danger" onClick={handleSave}>
               Save
             </Link>
           </div>
