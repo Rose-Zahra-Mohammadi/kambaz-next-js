@@ -4,12 +4,14 @@ import { Button, FormControl } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { addAssignment } from "./reducer";
+import { RootState } from "../../../store";
+
 export default function AssignmentControlButtons() {
     
     const dispatch = useDispatch();
     const router = useRouter();
     const { cid } = useParams();
-  const currentUser = useSelector((state: any) => state.accountReducer.currentUser);
+  const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
   
   const isFaculty = currentUser?.role === "FACULTY";
 
