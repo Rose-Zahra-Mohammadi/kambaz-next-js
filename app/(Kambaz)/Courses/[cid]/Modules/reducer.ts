@@ -38,9 +38,9 @@ const modulesSlice = createSlice({
       );
     },
     editModule: (state, { payload: moduleId }) => {
-      state.modules = state.modules.map((m: any) =>
+      state.modules = state.modules.map((m) =>
         m._id === moduleId ? { ...m, editing: true } : m
-      ) as any;
+      );
     },
   },
 });

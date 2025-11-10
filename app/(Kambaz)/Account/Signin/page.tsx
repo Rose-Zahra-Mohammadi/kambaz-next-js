@@ -7,12 +7,20 @@ import { useState } from "react";
 import * as db from "../../Database";
 import { FormControl, Button } from "react-bootstrap";
 
+interface Credentials {
+  username: string;
+  password: string;
+}
+
 export default function Signin() {
- const [credentials, setCredentials] = useState<any>({});
+ const [credentials, setCredentials] = useState<Credentials>({
+    username: "",
+    password: "",
+ });
  const dispatch = useDispatch();
  const signin = () => {
    const user = db.users.find(
-     (u: any) =>
+     (u) =>
        u.username === credentials.username &&
        u.password === credentials.password
    );
@@ -36,9 +44,5 @@ export default function Signin() {
              placeholder="password" type="password"
              className="mb-2"/>
       <Button onClick={signin} id="wd-signin-btn" className="w-100" > Sign in </Button>
-      {/* <Link id="wd-signin-btn"
-            href="/Account/Profile"
-            className="btn btn-primary w-100 mb-2">
-            Sign in </Link> */}
       <Link id="wd-signup-link" href="/Account/Signup">Sign up</Link>
     </div> );}
