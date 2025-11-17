@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { enrollments as dbEnrollments } from "../Database";
 
 interface Enrollment {
   userId: string;
@@ -10,7 +11,10 @@ interface EnrollmentsState {
 }
 
 const initialState: EnrollmentsState = {
-  enrollments: [],
+  enrollments: dbEnrollments.map(e => ({
+    userId: e.user,
+    courseId: e.course
+  })),
 };
 
 const enrollmentsSlice = createSlice({
@@ -20,7 +24,9 @@ const enrollmentsSlice = createSlice({
     enrollCourse: (state, action: PayloadAction<{ userId: string; courseId: string }>) => {
       const { userId, courseId } = action.payload;
       const exists = state.enrollments.find(e => e.userId === userId && e.courseId === courseId);
-      if (!exists) state.enrollments.push({ userId, courseId });
+      if (!exists) {
+        state.enrollments.push({ userId, courseId });
+      }
     },
     unenrollCourse: (state, action: PayloadAction<{ userId: string; courseId: string }>) => {
       state.enrollments = state.enrollments.filter(

@@ -20,6 +20,10 @@ export default function Labs() {
          <Link href="/Labs/Lab4" id="wd-lab3-link">
            Lab 4: Managing State and User Input with Forms </Link>
        </li>
+       <li>
+         <Link href="/Labs/Lab5" id="wd-lab5-link">
+           Lab 5: Server-side APIs </Link>
+       </li>
             <li>
        <Link href="https://github.com/Rose-Zahra-Mohammadi/kambaz-next-js" id="wd-my-github-link">
          github </Link> </li>

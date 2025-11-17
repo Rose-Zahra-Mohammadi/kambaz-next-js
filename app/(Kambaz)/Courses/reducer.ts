@@ -25,8 +25,12 @@ const coursesSlice = createSlice({
  initialState,
  reducers: {
    addNewCourse: (state, { payload: course }) => {
-     const newCourse = { ...course, _id: uuidv4() };
-     state.courses.push(newCourse);
+     const newCourse = { ...course, _id: course._id || uuidv4() };
+     // Check if course already exists to prevent duplicates
+     const exists = state.courses.find(c => c._id === newCourse._id);
+     if (!exists) {
+       state.courses.push(newCourse);
+     }
    },
    deleteCourse: (state, { payload: courseId }) => {
      state.courses = state.courses.filter(
@@ -43,6 +47,6 @@ const coursesSlice = createSlice({
    },
  },
 });
-export const { addNewCourse, deleteCourse, updateCourse } =
+export const { addNewCourse, deleteCourse, updateCourse, setCourses } =
  coursesSlice.actions;
 export default coursesSlice.reducer;
