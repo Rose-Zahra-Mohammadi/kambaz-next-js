@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { addAssignment, deleteAssignment, updateAssignment } from "../reducer";
-import Link from "next/link";
 import * as db from "../../../../Database"
 import { FormControl, FormLabel, FormSelect, FormCheck, Button } from "react-bootstrap";
 import { RootState } from "../../../../store";
@@ -71,12 +70,7 @@ export default function AssignmentEditor() {
 
     router.push(`/Courses/${cid}/Assignments`);
   }
-
-  const handleDelete = () => {
-    if (!isFaculty || !assignment._id) return;
-    dispatch(deleteAssignment(assignment._id));
-    router.push(`/Courses/${cid}/Assignments`);
-  }
+  
   if (!assignment) {
     return <div className="m-4 text-danger">Assignment not found.</div>;
   }
