@@ -79,7 +79,7 @@ export default function AssignmentEditor() {
       {/* Assignment Name */}
       <div className="row mb-3">
         <div className="col-md-2"></div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <FormLabel htmlFor="wd-name">Assignment Name</FormLabel>
           <FormControl id="wd-name"
             type="text"
@@ -113,7 +113,7 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-points">Points</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <FormControl id="wd-points" value={assignment.points || 100}
             type="number"
             onChange={(e) => setAssignment({ ...assignment, points: Number(e.target.value) })}
@@ -126,7 +126,7 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-group">Assignment Group</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <FormSelect id="wd-group" defaultValue="1">
             <option value="1">Assignments</option>
             <option value="2">Quizzes</option>
@@ -142,7 +142,7 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-display-grade-as">Display Grade as</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <FormSelect id="wd-display-grade-as" defaultValue="1">
             <option value="1">Percentage</option>
             <option value="2">Points</option>
@@ -158,7 +158,7 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-submission-type">Submission Type</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <div className="border p-3 bg-light rounded">
             <FormSelect id="wd-submission-type" className="mb-3" defaultValue="1">
               <option value="1">Online</option>
@@ -186,43 +186,43 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-assign-to">Assign</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <div className="border p-3 bg-light rounded">
             <FormLabel className="fw-bold mb-2">Assign to</FormLabel>
             <FormControl id="wd-assign-to" value="Everyone" className="mb-3" />
 
-            <div className="row">
-              <div className="col-md-6">
+            <div className="row mb-3">
+              <div className="col-md-12">
                 <FormLabel htmlFor="wd-due-date">Due</FormLabel>
                 <FormControl
                   id="wd-due-date"
                   value={assignment.dueDate || ""}
                   type="date"
                   onChange={(e) => setAssignment({ ...assignment, dueDate: e.target.value })}
-                  readOnly={!isFaculty}
+                  disabled={!isFaculty}
                 />
               </div>
             </div>
 
-            <div className="row mt-3">
-              <div className="col-md-6">
+            <div className="row">
+              <div className="col-md-6 pe-2">
                 <FormLabel htmlFor="wd-available-from">Available from</FormLabel>
                 <FormControl
                   id="wd-available-from"
                   value={(assignment as any).availableDate || ""}
                   type="date"
                   onChange={(e) => setAssignment({ ...assignment, availableDate: e.target.value })}
-                  readOnly={!isFaculty}
+                  disabled={!isFaculty}
                 />
               </div>
-              <div className="col-md-6">
+              <div className="col-md-6 ps-2">
                 <FormLabel htmlFor="wd-available-until">Until</FormLabel>
                 <FormControl
                   id="wd-available-until"
                   value={(assignment as any).untilDate || ""}
                   type="date"
                   onChange={(e) => setAssignment({ ...assignment, untilDate: e.target.value })}
-                  readOnly={!isFaculty}
+                  disabled={!isFaculty}
                 />
               </div>
             </div>

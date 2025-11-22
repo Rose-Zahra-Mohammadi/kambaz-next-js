@@ -16,7 +16,21 @@ type Assignment = {
   _id?: string;
   title: string;
   course: string;
+  points?: number;
+  dueDate?: string;
+  availableDate?: string;
+  untilDate?: string;
+  description?: string;
 }
+
+// Helper function to format date without timezone issues
+const formatDate = (dateString: string) => {
+  if (!dateString) return "";
+  // Parse the date string as local date to avoid timezone conversion
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+};
 
 export default function Assignments() {
   const { cid } = useParams();
@@ -34,19 +48,27 @@ export default function Assignments() {
   
   // Combine assignments: prioritize Redux (updated) assignments, then add DB assignments that don't exist in Redux
   // But exclude DB assignments that were deleted from Redux (were in initial state but no longer in Redux)
-  const allAssignments = [...reduxFiltered];
+  // Create a map to ensure Redux assignments override DB assignments
+  const assignmentMap = new Map<string, Assignment>();
+  
+  // First, add all Redux assignments (these are the most up-to-date)
+  reduxFiltered.forEach(assignment => {
+    assignmentMap.set(assignment._id || "", assignment);
+  });
+  
+  // Then, add DB assignments only if they don't exist in Redux and weren't deleted
   dbAssignments.forEach(dbAssignment => {
-    const wasInInitialState = initialReduxIds.has(dbAssignment._id);
-    const isStillInRedux = reduxAssignmentIds.has(dbAssignment._id);
-    const isNotInList = !allAssignments.find(a => a._id === dbAssignment._id);
+    const wasInInitialState = initialReduxIds.has(dbAssignment._id || "");
+    const isStillInRedux = reduxAssignmentIds.has(dbAssignment._id || "");
+    const isNotInMap = !assignmentMap.has(dbAssignment._id || "");
     
     // Only add from DB if: it wasn't in initial state, OR it's still in Redux, OR it's a new DB assignment
-    if (isNotInList && (!wasInInitialState || isStillInRedux)) {
-      allAssignments.push(dbAssignment);
+    if (isNotInMap && (!wasInInitialState || isStillInRedux)) {
+      assignmentMap.set(dbAssignment._id || "", dbAssignment);
     }
   });
   
-  const assignments: Assignment[] = allAssignments;
+  const assignments: Assignment[] = Array.from(assignmentMap.values());
   
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);
@@ -134,7 +156,16 @@ export default function Assignments() {
                       <div>
                         <strong>{assignment.title}</strong>
                         <div className="text-muted small">
-                          <span className="text-danger">Multiple Modules</span> | Not available until May 6 at 12:00am | Due May 13 at 11:59pm | 100 pts
+                          <span className="text-danger">Multiple Modules</span> | 
+                          {assignment.availableDate && (
+                            <> Not available until {formatDate(assignment.availableDate)}</>
+                          )}
+                          {assignment.dueDate && (
+                            <> | Due {formatDate(assignment.dueDate)}</>
+                          )}
+                          {assignment.points && (
+                            <> | {assignment.points} pts</>
+                          )}
                         </div>
                       </div>
                     </div>
