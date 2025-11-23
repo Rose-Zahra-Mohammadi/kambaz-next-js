@@ -14,7 +14,7 @@ export const findMyCourses = async () => {
     return data;
 };
 export const createCourse = async (course: any) => {
-    const { data } = await axiosWithCredentials.post(`${COURSES_API}/current/courses`, course);
+    const { data } = await axiosWithCredentials.post(`${COURSES_API}`, course);
     return data;
 };
 export const fetchCourseById = async (courseId: string) => {

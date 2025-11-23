@@ -32,8 +32,34 @@ export default function Dashboard() {
     }
   };
   const onAddNewCourse = async () => {
-    const newCourse = await client.createCourse(course);
-    dispatch(setCourses([ ...courses, newCourse ]));
+    try {
+      // Remove _id before sending - server will generate it
+      const { _id, ...courseToSend } = course;
+      console.log("Creating course with data:", courseToSend);
+      const newCourse = await client.createCourse(courseToSend);
+      console.log("Course created successfully:", newCourse);
+      dispatch(setCourses([ ...courses, newCourse ]));
+      // Auto-enroll faculty in the course they create
+      if (currentUser) {
+        dispatch(enrollCourse({ userId: currentUser._id, courseId: newCourse._id }));
+      }
+      // Reset form
+      setCourse({
+        _id: crypto.randomUUID(),
+        name: "New Course",
+        number: "New Number",
+        startDate: "2023-09-10",
+        endDate: "2023-12-15",
+        image: "/images/reactjs.jpg",
+        description: "New Description",
+      });
+    } catch (error: any) {
+      console.error("Failed to create course:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      const errorMessage = error.response?.data?.message || error.message || "Failed to create course";
+      alert(`Failed to create course: ${errorMessage}`);
+    }
   };
 
   useEffect(() => {
