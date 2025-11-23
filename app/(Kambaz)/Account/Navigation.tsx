@@ -8,11 +8,16 @@ export default function AccountNavigation() {
   const currentUser  = useSelector((state: RootState) => state.accountReducer.currentUser);
   const links = currentUser ? ["Profile"] : ["Signin", "Signup"];
  const pathname = usePathname();
+ 
+ const getLinkPath = (link: string) => {
+   return `/Account/${link}`;
+ };
+ 
  return (
    <Nav variant="pills">
      {links.map((link) => (
        <NavItem key={link}>
-         <NavLink as={Link} href={link} active={pathname.endsWith(link.toLowerCase())}>
+         <NavLink as={Link} href={getLinkPath(link)} active={pathname.endsWith(link.toLowerCase())}>
            {link} </NavLink> </NavItem>
      ))}
    </Nav>
