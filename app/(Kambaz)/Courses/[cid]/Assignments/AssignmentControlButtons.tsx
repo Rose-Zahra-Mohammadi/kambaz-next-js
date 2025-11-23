@@ -2,34 +2,21 @@
 import { useParams, useRouter } from "next/navigation";
 import { Button, FormControl } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { addAssignment } from "./reducer";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 
 export default function AssignmentControlButtons() {
-    
-    const dispatch = useDispatch();
     const router = useRouter();
     const { cid } = useParams();
-  const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
-  
-  const isFaculty = currentUser?.role === "FACULTY";
+    const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
+    const isFaculty = currentUser?.role === "FACULTY";
 
     const handleAddAssignment = () => {
         if (!isFaculty) return;
 
-        // Create a new blank assignment and dispatch to store
-        const newAssignment = {
-            _id: crypto.randomUUID(),
-            title: "New Assignment",
-            course: cid,
-            points: 100,
-            description: "",
-            dueDate: "",
-        };
-        dispatch(addAssignment(newAssignment));
-
-        router.push(`/Courses/${cid}/Assignments/${newAssignment._id || ""}`);
+        // Generate a new ID and navigate to editor without creating assignment yet
+        const newAssignmentId = crypto.randomUUID();
+        router.push(`/Courses/${cid}/Assignments/${newAssignmentId}`);
     };
 
   const handleAddGroup = () => {

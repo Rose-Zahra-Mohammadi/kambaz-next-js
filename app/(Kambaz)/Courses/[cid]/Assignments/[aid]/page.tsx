@@ -4,10 +4,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { addAssignment, deleteAssignment, updateAssignment } from "../reducer";
-import Link from "next/link";
 import * as db from "../../../../Database"
-import { FormControl, FormLabel, FormSelect, FormCheck } from "react-bootstrap";
-import { RootState } from "../../../../../(Kambaz)/store";
+import { FormControl, FormLabel, FormSelect, FormCheck, Button } from "react-bootstrap";
+import { RootState } from "../../../../store";
 
 export default function AssignmentEditor() { 
   const { cid, aid } = useParams();
@@ -16,14 +15,16 @@ export default function AssignmentEditor() {
 
   const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
   const isFaculty = currentUser?.role === "FACULTY";
-
-  const existingAssignment = db.assignments.find(assignment => assignment._id === aid);
+  
+  const assignments = useSelector((state: RootState) => state.assignmentReducer.assignments);
+  const existingAssignment = assignments.find(assignment => assignment._id === aid) || 
+                             db.assignments.find(assignment => assignment._id === aid);
 
   const [assignment, setAssignment] = useState(
     existingAssignment || {
-      _id: undefined,
+      _id: aid as string,
       title: "",
-      course: cid,
+      course: cid as string,
       dueDate: "",
       points: 100,
       description: "",
@@ -33,59 +34,52 @@ export default function AssignmentEditor() {
   );
 
   useEffect(() => {
-    if (existingAssignment) {
-      setAssignment(existingAssignment);
+    const found = assignments.find(a => a._id === aid) || 
+                  db.assignments.find(a => a._id === aid);
+    if (found) {
+      setAssignment(found);
     }
-  }, [existingAssignment]);
+  }, [aid, assignments]);
 
   const handleSave = () => {
     if (!isFaculty) return; // block students
 
+    const assignmentToSave = {
+      ...assignment,
+      _id: assignment._id || aid as string,
+      course: cid as string,
+      title: assignment.title || "New Assignment",
+      description: assignment.description || "",
+      points: assignment.points || 100,
+      dueDate: assignment.dueDate || "",
+      availableDate: (assignment as any).availableDate || "",
+      untilDate: (assignment as any).untilDate || "",
+    };
 
-    if (assignment._id) {
-      dispatch(updateAssignment(assignment));
+    // Check if assignment already exists in Redux or database
+    const existingInRedux = assignments.find(a => a._id === assignmentToSave._id);
+    const existingInDb = db.assignments.find(a => a._id === assignmentToSave._id);
+    
+    if (existingInRedux || existingInDb) {
+      // Existing assignment - update it
+      dispatch(updateAssignment(assignmentToSave));
     } else {
-      dispatch(addAssignment(assignment));
+      // New assignment - add it
+      dispatch(addAssignment(assignmentToSave));
     }
 
     router.push(`/Courses/${cid}/Assignments`);
   }
-
-  const handleDelete = () => {
-    if (!isFaculty || !assignment._id) return;
-    dispatch(deleteAssignment(assignment._id));
-    router.push(`/Courses/${cid}/Assignments`);
-  }
+  
   if (!assignment) {
     return <div className="m-4 text-danger">Assignment not found.</div>;
-  }
-  const highlightOnline = (text: string) =>
-    text.split(/(available online)/gi).map((part, i) =>
-      part.toLocaleLowerCase() === "available online" ? (
-        <span key={i} style={{ color: "red", fontWeight: "bold" }}>{part}</span>
-
-      ) : (part));
-
-  let descriptionPart = assignment.description;
-  let listItems: string[] = [];
-  let afterListText = "";
-  const listStartIndex = descriptionPart.indexOf("Your full name");
-  const listEndIndex = descriptionPart.indexOf(
-    "The kanbas application should include a link"
-  );
-  if (listStartIndex !== -1 && listEndIndex !== -1) {
-    const beforeList = descriptionPart.substring(0, listStartIndex).trim();
-    const listText = descriptionPart.substring(listStartIndex, listEndIndex).trim();
-    afterListText = descriptionPart.substring(listEndIndex).trim();
-    listItems = listText.split(".").map((item) => item.trim()).filter(Boolean);
-    descriptionPart = beforeList;
   }
   return (
     <div id="wd-assignments-editor" className="p-4">
       {/* Assignment Name */}
       <div className="row mb-3">
         <div className="col-md-2"></div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <FormLabel htmlFor="wd-name">Assignment Name</FormLabel>
           <FormControl id="wd-name"
             type="text"
@@ -97,28 +91,20 @@ export default function AssignmentEditor() {
 
       {/* Description */}
       <div className="row mb-3 align-items-start">
-        <div className="col-md-2 text-end"></div>
-        <div className="col-md-4">
-          <div
-            className="form-control"
-            style={{
-              height: "auto",
-              minHeight: "120px",
-              padding: "12px",
-              backgroundColor: "#f8f9fa",
-              border: "1px solid #ced4da",
-            }}
-          >
-            {highlightOnline(descriptionPart)}
-            {listItems.length > 0 && (
-              <ul>
-                {listItems.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            )}
-            {afterListText && <p>{afterListText}</p>}
-          </div>
+        <div className="col-md-2 text-end">
+          <FormLabel htmlFor="wd-description">Description</FormLabel>
+        </div>
+        <div className="col-md-8">
+          <FormControl
+            id="wd-description"
+            as="textarea"
+            rows={8}
+            value={assignment.description || ""}
+            onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}
+            readOnly={!isFaculty}
+            placeholder="Enter assignment description..."
+            style={{ whiteSpace: "pre-wrap" }}
+          />
         </div>
       </div>
 
@@ -127,8 +113,8 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-points">Points</FormLabel>
         </div>
-        <div className="col-md-4">
-          <FormControl id="wd-points" defaultValue={assignment.points || 100}
+        <div className="col-md-8">
+          <FormControl id="wd-points" value={assignment.points || 100}
             type="number"
             onChange={(e) => setAssignment({ ...assignment, points: Number(e.target.value) })}
             readOnly={!isFaculty} />
@@ -140,7 +126,7 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-group">Assignment Group</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <FormSelect id="wd-group" defaultValue="1">
             <option value="1">Assignments</option>
             <option value="2">Quizzes</option>
@@ -156,7 +142,7 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-display-grade-as">Display Grade as</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <FormSelect id="wd-display-grade-as" defaultValue="1">
             <option value="1">Percentage</option>
             <option value="2">Points</option>
@@ -172,7 +158,7 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-submission-type">Submission Type</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <div className="border p-3 bg-light rounded">
             <FormSelect id="wd-submission-type" className="mb-3" defaultValue="1">
               <option value="1">Online</option>
@@ -200,39 +186,43 @@ export default function AssignmentEditor() {
         <div className="col-md-2 text-end">
           <FormLabel htmlFor="wd-assign-to">Assign</FormLabel>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-8">
           <div className="border p-3 bg-light rounded">
             <FormLabel className="fw-bold mb-2">Assign to</FormLabel>
             <FormControl id="wd-assign-to" value="Everyone" className="mb-3" />
 
-            <div className="row">
-              <div className="col-md-6">
+            <div className="row mb-3">
+              <div className="col-md-12">
                 <FormLabel htmlFor="wd-due-date">Due</FormLabel>
                 <FormControl
                   id="wd-due-date"
-                  defaultValue={assignment.dueDate || "2025-05-25"}
+                  value={assignment.dueDate || ""}
                   type="date"
                   onChange={(e) => setAssignment({ ...assignment, dueDate: e.target.value })}
-                  readOnly={!isFaculty}
+                  disabled={!isFaculty}
                 />
               </div>
             </div>
 
-            <div className="row mt-3">
-              <div className="col-md-6">
+            <div className="row">
+              <div className="col-md-6 pe-2">
                 <FormLabel htmlFor="wd-available-from">Available from</FormLabel>
                 <FormControl
                   id="wd-available-from"
-                  defaultValue={assignment.availableDate || "2025-05-01"}
+                  value={(assignment as any).availableDate || ""}
                   type="date"
+                  onChange={(e) => setAssignment({ ...assignment, availableDate: e.target.value })}
+                  disabled={!isFaculty}
                 />
               </div>
-              <div className="col-md-6">
+              <div className="col-md-6 ps-2">
                 <FormLabel htmlFor="wd-available-until">Until</FormLabel>
                 <FormControl
                   id="wd-available-until"
-                  defaultValue={assignment.untilDate || "2025-05-25"}
+                  value={(assignment as any).untilDate || ""}
                   type="date"
+                  onChange={(e) => setAssignment({ ...assignment, untilDate: e.target.value })}
+                  disabled={!isFaculty}
                 />
               </div>
             </div>
@@ -244,12 +234,12 @@ export default function AssignmentEditor() {
       <div className="row">
         <div className="col-md-4">
           <div className="d-flex justify-content-end gap-2 mt-4">
-            <Link href={`/Courses/${cid}/Assignments`} className="btn btn-secondary" onClick={handleDelete}>
+            <Button variant="secondary" onClick={() => router.push(`/Courses/${cid}/Assignments`)}>
               Cancel
-            </Link>
-            <Link href={`/Courses/${cid}/Assignments`} className="btn btn-danger" onClick={handleSave}>
+            </Button>
+            <Button variant="danger" onClick={handleSave}>
               Save
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
