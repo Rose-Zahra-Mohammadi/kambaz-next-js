@@ -1,6 +1,6 @@
 import axios from "axios";
 const axiosWithCredentials = axios.create({ withCredentials: true });
-const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
+const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER || 'http://localhost:4000';
 const COURSES_API = `${HTTP_SERVER}/api/courses`;
 const USERS_API = `${HTTP_SERVER}/api/users`;
 
@@ -14,6 +14,15 @@ export const findMyCourses = async () => {
     return data;
 };
 export const createCourse = async (course: any) => {
-    const { data } = await axiosWithCredentials.post(`${USERS_API}/current/courses`, course);
+    const { data } = await axiosWithCredentials.post(`${COURSES_API}/current/courses`, course);
     return data;
 };
+export const fetchCourseById = async (courseId: string) => {
+    const { data } = await axios.get(`${COURSES_API}/${courseId}`);
+    return data;
+};
+
+export const fetchModulesForCourse = async (courseId: string) => {
+    const { data } = await axios.get(`${COURSES_API}/${courseId}/modules`);
+    return data;
+};ß
