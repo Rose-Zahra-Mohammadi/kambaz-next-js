@@ -158,10 +158,10 @@ export default function Assignments() {
                         <div className="text-muted small">
                           <span className="text-danger">Multiple Modules</span> | 
                           {assignment.availableDate && (
-                            <> Not available until {formatDate(assignment.availableDate)}</>
+                            <> Not available until {new Date(assignment.availableDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</>
                           )}
                           {assignment.dueDate && (
-                            <> | Due {formatDate(assignment.dueDate)}</>
+                            <> | Due {new Date(assignment.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</>
                           )}
                           {assignment.points && (
                             <> | {assignment.points} pts</>
