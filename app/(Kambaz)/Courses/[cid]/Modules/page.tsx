@@ -1,7 +1,7 @@
 "use client"
-import { addModule, editModule, updateModule, deleteModule }
+import { addModule, editModule, updateModule, deleteModule, setModules }
   from "./reducer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import ModulesControls from "./ModulesControls";
 import { FormControl, ListGroup, ListGroupItem } from "react-bootstrap";
@@ -11,6 +11,7 @@ import LessonControlButtons from "./LessonControlButtons";
 import { ParamValue } from "next/dist/server/request/params";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
+import * as client from "../../client";
 
 type Lesson = {
   _id?: string;
@@ -34,7 +35,20 @@ export default function Modules() {
   const { modules } = useSelector((state: RootState) => state.moduleReducer);
   const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
   const isFaculty = currentUser?.role === "FACULTY";
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        const fetchedModules = await client.fetchModulesForCourse(cid as string);
+        dispatch(setModules(fetchedModules));
+      } catch (error) {
+        console.error("Failed to fetch modules:", error);
+      }
+    };
+    fetchModules();
+  }, [cid, dispatch]);
+
   return (
     <div className="wd-modules">
       {isFaculty && (
