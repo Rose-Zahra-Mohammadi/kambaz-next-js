@@ -6,7 +6,7 @@ import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, Button, FormCon
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { addNewCourse, Course, deleteCourse, updateCourse, setCourses } from "../Courses/reducer";
-import { enrollCourse, unenrollCourse } from "../Courses/enrollmentsSlice";
+import { enrollCourse, unenrollCourse, setEnrollments } from "../Courses/enrollmentsSlice";
 
 export default function Dashboard() {
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
@@ -25,10 +25,23 @@ export default function Dashboard() {
   });
   const fetchCourses = async () => {
     try {
-      const courses = await client.findMyCourses();
+      const courses = await client.fetchAllCourses();
       dispatch(setCourses(courses));
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const fetchEnrollments = async () => {
+    try {
+      const enrollments = await client.fetchEnrollmentsForCurrentUser();
+      const formattedEnrollments = enrollments.map((e: any) => ({
+        userId: e.user,
+        courseId: e.course
+      }));
+      dispatch(setEnrollments(formattedEnrollments));
+    } catch (error) {
+      console.error("Failed to fetch enrollments:", error);
     }
   };
   const onAddNewCourse = async () => {
@@ -39,10 +52,6 @@ export default function Dashboard() {
       const newCourse = await client.createCourse(courseToSend);
       console.log("Course created successfully:", newCourse);
       dispatch(setCourses([ ...courses, newCourse ]));
-      // Auto-enroll faculty in the course they create
-      if (currentUser) {
-        dispatch(enrollCourse({ userId: currentUser._id, courseId: newCourse._id }));
-      }
       // Reset form
       setCourse({
         _id: crypto.randomUUID(),
@@ -63,7 +72,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchCourses();
+    if (currentUser) {
+      fetchCourses();
+      fetchEnrollments();
+    }
   }, [currentUser]);
   const isFaculty = currentUser?.role === "FACULTY";
   const [showAll, setShowAll] = useState(isFaculty); // Faculty see all by default, students see enrolled only
@@ -81,14 +93,26 @@ export default function Dashboard() {
 
   const toggleEnrollment = () => setShowAll(prev => !prev);
 
-  const handleEnroll = (courseId: string) => {
+  const handleEnroll = async (courseId: string) => {
     if (!currentUser) return;
-    dispatch(enrollCourse({ userId: currentUser._id, courseId }));
+    try {
+      await client.enrollInCourse(courseId);
+      dispatch(enrollCourse({ userId: currentUser._id, courseId }));
+    } catch (error) {
+      console.error("Failed to enroll:", error);
+      alert("Failed to enroll in course. Please try again.");
+    }
   };
 
-  const handleUnenroll = (courseId: string) => {
+  const handleUnenroll = async (courseId: string) => {
     if (!currentUser) return;
-    dispatch(unenrollCourse({ userId: currentUser._id, courseId }));
+    try {
+      await client.unenrollFromCourse(courseId);
+      dispatch(unenrollCourse({ userId: currentUser._id, courseId }));
+    } catch (error) {
+      console.error("Failed to unenroll:", error);
+      alert("Failed to unenroll from course. Please try again.");
+    }
   };
 
   const handleAddCourse = (e?: React.MouseEvent) => {
@@ -103,8 +127,6 @@ export default function Dashboard() {
       creator: currentUser._id
     };
     dispatch(addNewCourse(newCourse));
-    // Auto-enroll faculty in the course they create
-    dispatch(enrollCourse({ userId: currentUser._id, courseId: newCourse._id }));
     // Reset form
     setCourse({
       _id: crypto.randomUUID(),
