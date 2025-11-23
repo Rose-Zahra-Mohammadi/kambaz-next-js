@@ -25,4 +25,4 @@ export const fetchCourseById = async (courseId: string) => {
 export const fetchModulesForCourse = async (courseId: string) => {
     const { data } = await axios.get(`${COURSES_API}/${courseId}/modules`);
     return data;
-};ß
+};
