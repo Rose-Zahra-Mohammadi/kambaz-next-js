@@ -1,5 +1,5 @@
 "use client"
-import { addModule, editModule, updateModule, deleteModule, setModules }
+import { addModule, editModule, updateModule as updateModuleAction, deleteModule as deleteModuleAction, setModules }
   from "./reducer";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
@@ -53,9 +53,15 @@ export default function Modules() {
     <div className="wd-modules">
       {isFaculty && (
       <ModulesControls  moduleName={moduleName} setModuleName={setModuleName} 
-      addModule={()=>{
-        dispatch(addModule({ name: moduleName, course: cid}));
-        setModuleName("");
+      addModule={async ()=>{
+        try {
+          const newModule = await client.createModule(cid as string, { name: moduleName, course: cid });
+          dispatch(addModule(newModule));
+          setModuleName("");
+        } catch (error) {
+          console.error("Failed to create module:", error);
+          alert("Failed to create module. Please try again.");
+        }
         } }/>)}
         <br /><br /><br /><br />
       <ListGroup className="rounded-0" id="wd-modules">
@@ -69,20 +75,33 @@ export default function Modules() {
                  { module.editing && (
                   <FormControl className="w-50 d-inline-block"
                           onChange={(e) => dispatch(
-                            updateModule({...module, name: e.target.value })
+                            updateModuleAction({...module, name: e.target.value })
                  )}
-                          onKeyDown={(e) => {
+                          onKeyDown={async (e) => {
                             if (e.key === "Enter") {
-                              dispatch(updateModule({ ...module, editing: false }));
+                              try {
+                                const updatedModule = { ...module, editing: false };
+                                await client.updateModule(cid as string, updatedModule);
+                                dispatch(updateModuleAction(updatedModule));
+                              } catch (error) {
+                                console.error("Failed to update module:", error);
+                                alert("Failed to update module. Please try again.");
+                              }
                             }
                           }}
                             defaultValue={module.name}/>
                  )}
                 <ModuleControlButtons
                   moduleId={module._id}
-                  deleteModule={(moduleId) => {
+                  deleteModule={async (moduleId) => {
                     if (!isFaculty) return;
-                    dispatch(deleteModule(moduleId));
+                    try {
+                      await client.deleteModule(cid as string, moduleId);
+                      dispatch(deleteModuleAction(moduleId));
+                    } catch (error) {
+                      console.error("Failed to delete module:", error);
+                      alert("Failed to delete module. Please try again.");
+                    }
                   }}
                   isFaculty = {isFaculty}
                   editModule={(moduleId)=> {
