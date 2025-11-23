@@ -3,7 +3,12 @@ const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 const TODOS_API = `${HTTP_SERVER}/lab5/todos`;
 export const fetchTodos = async () => {
   const response = await axios.get(TODOS_API);
-  return response.data;
+  // Handle different response formats - server might return array directly or wrapped in object
+  if (Array.isArray(response.data)) {
+    return response.data;
+  }
+  // If response is an object, check for common property names
+  return response.data.todos || response.data.data || [];
 };
 
 export const fetchWelcomeMessage = async () => {
