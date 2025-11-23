@@ -24,10 +24,6 @@ export const updateTitle = async (title: string) => {
   const response = await axios.get(`${ASSIGNMENT_API}/title/${title}`);
   return response.data;
 };
-export const removeTodo = async (todo: any) => {
-  const response = await axios.get(`${TODOS_API}/${todo.id}/delete`);
-  return response.data;
-};
 export const deleteTodo = async (todo: any) => {
   const response = await axios.delete(`${TODOS_API}/${todo.id}`);
   return response.data;

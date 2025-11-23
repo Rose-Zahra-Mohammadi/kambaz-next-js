@@ -23,10 +23,6 @@ export default function WorkingWithArraysAsynchronously() {
         setTodos(todos);
     };
 
-    const removeTodo = async (todo: any) => {
-        const removedTodo = await client.removeTodo(todo);
-        setTodos(todos.filter((t) => t.id !== todo.id));
-    };
     const [errorMessage, setErrorMessage] = useState(null);
     const updateTodo = async (todo: any) => {
       try {
@@ -70,7 +66,7 @@ export default function WorkingWithArraysAsynchronously() {
             <ListGroup>
                 {todos.map((todo) => (
                     <ListGroupItem key={todo.id}>
-                        <FaTrash onClick={() => removeTodo(todo)} className="text-danger float-end mt-1" id="wd-remove-todo" />
+                        <FaTrash onClick={() => deleteTodo(todo)} className="text-danger float-end mt-1" id="wd-remove-todo" />
                         <TiDelete onClick={() => deleteTodo(todo)} className="text-danger me-2 float-end fs-3" id="wd-delete-todo" />
                         <FaPencil onClick={() => editTodo(todo)} className="text-primary float-end me-2 mt-1" />
                         <input type="checkbox" className="form-check-input me-2"
