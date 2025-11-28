@@ -54,4 +54,9 @@ export const unenrollFromCourse = async (courseId: string) => {
 export const fetchEnrollmentsForCurrentUser = async () => {
     const { data } = await axiosWithCredentials.get(`${USERS_API}/current/enrollments`);
     return data;
+}
+
+export const updateUser = async (user: any) => {
+    const { data } = await axiosWithCredentials.put(`${USERS_API}/${user._id}`, user);
+    return data;
 };
