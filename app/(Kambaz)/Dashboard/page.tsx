@@ -107,7 +107,7 @@ export default function Dashboard() {
   const handleUnenroll = async (courseId: string) => {
     if (!currentUser) return;
     try {
-      await client.unenrollFromCourse(courseId);
+      await client.unenrollFromCourse(currentUser._id, courseId);
       dispatch(unenrollCourse({ userId: currentUser._id, courseId }));
     } catch (error) {
       console.error("Failed to unenroll:", error);
@@ -115,29 +115,29 @@ export default function Dashboard() {
     }
   };
 
-  const handleAddCourse = (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    if (!currentUser) return;
-    const newCourse = {
-      ...course,
-      _id: crypto.randomUUID(),
-      creator: currentUser._id
-    };
-    dispatch(addNewCourse(newCourse));
-    // Reset form
-    setCourse({
-      _id: crypto.randomUUID(),
-      name: "New Course",
-      number: "New Number",
-      startDate: "2023-09-10",
-      endDate: "2023-12-15",
-      image: "/images/reactjs.jpg",
-      description: "New Description",
-    });
-  };
+  // const handleAddCourse = (e?: React.MouseEvent) => {
+  //   if (e) {
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //   }
+  //   if (!currentUser) return;
+  //   const newCourse = {
+  //     ...course,
+  //     _id: crypto.randomUUID(),
+  //     creator: currentUser._id
+  //   };
+  //   dispatch(addNewCourse(newCourse));
+  //   // Reset form
+  //   setCourse({
+  //     _id: crypto.randomUUID(),
+  //     name: "New Course",
+  //     number: "New Number",
+  //     startDate: "2023-09-10",
+  //     endDate: "2023-12-15",
+  //     image: "/images/reactjs.jpg",
+  //     description: "New Description",
+  //   });
+  // };
 
   return (
     <div id="wd-dashboard">
