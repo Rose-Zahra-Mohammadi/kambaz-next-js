@@ -1,11 +1,11 @@
 "use client";
 import * as client from "../Courses/client";
-import { useEffect, useState} from "react";
+import { useEffect, useState, useCallback} from "react";
 import Link from "next/link";
 import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText, Button, FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { addNewCourse, Course, deleteCourse, updateCourse, setCourses } from "../Courses/reducer";
+import { Course, setCourses } from "../Courses/reducer";
 import { enrollCourse, unenrollCourse, setEnrollments } from "../Courses/enrollmentsSlice";
 
 export default function Dashboard() {
@@ -23,16 +23,16 @@ export default function Dashboard() {
     image: "",
     description: "New Description",
   });
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
     try {
       const courses = await client.fetchAllCourses();
       dispatch(setCourses(courses));
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [dispatch]);
 
-  const fetchEnrollments = async () => {
+  const fetchEnrollments = useCallback(async () => {
     try {
       const enrollments = await client.fetchEnrollmentsForCurrentUser();
       const formattedEnrollments = enrollments.map((e: any) => ({
@@ -43,11 +43,11 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Failed to fetch enrollments:", error);
     }
-  };
+  }, [dispatch]);
   const onAddNewCourse = async () => {
     try {
       // Remove _id before sending - server will generate it
-      const { _id, ...courseToSend } = course;
+      const { _id: _, ...courseToSend } = course;
       console.log("Creating course with data:", courseToSend);
       await client.createCourse(courseToSend);
       // Refresh courses and enrollments from server to ensure persistence
@@ -77,7 +77,7 @@ export default function Dashboard() {
       fetchCourses();
       fetchEnrollments();
     }
-  }, [currentUser]);
+  }, [currentUser, fetchCourses, fetchEnrollments]);
   const isFaculty = currentUser?.role === "FACULTY";
   const [showAll, setShowAll] = useState(isFaculty); // Faculty see all by default, students see enrolled only
 
@@ -229,6 +229,7 @@ export default function Dashboard() {
             <div className="mb-2">
               <small className="text-muted d-block mb-1">Image Preview:</small>
               <div className="mt-1" style={{ maxWidth: "200px", maxHeight: "150px", overflow: "hidden", border: "1px solid #ddd", borderRadius: "4px", backgroundColor: "#f5f5f5" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={course.image} 
                   alt="Course preview" 
@@ -297,9 +298,11 @@ export default function Dashboard() {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              enrolled 
-                                ? handleUnenroll(course._id)
-                                : handleEnroll(course._id);
+                              if (enrolled) {
+                                handleUnenroll(course._id);
+                              } else {
+                                handleEnroll(course._id);
+                              }
                             }}
                           >
                             {enrolled ? "Unenroll" : "Enroll"}
@@ -336,9 +339,11 @@ export default function Dashboard() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            enrolled 
-                              ? handleUnenroll(course._id)
-                              : handleEnroll(course._id);
+                            if (enrolled) {
+                              handleUnenroll(course._id);
+                            } else {
+                              handleEnroll(course._id);
+                            }
                           }}
                         >
                           {enrolled ? "Unenroll" : "Enroll"}

@@ -9,6 +9,8 @@
         dueDate: string;
         points: number;
         description?: string;
+        availableDate?: string;
+        untilDate?: string;
     }
 
     interface AssignmentState {
