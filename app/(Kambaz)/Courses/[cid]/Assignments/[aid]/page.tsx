@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import { addAssignment, deleteAssignment, updateAssignment, setAssignments } from "../reducer";
+import { setAssignments } from "../reducer";
 import * as db from "../../../../Database"
 import * as client from "../../../client";
 import { FormControl, FormLabel, FormSelect, FormCheck, Button } from "react-bootstrap";
@@ -42,7 +42,7 @@ export default function AssignmentEditor() {
           if (fetchedAssignment) {
             setAssignment(fetchedAssignment);
           }
-        } catch (error) {
+        } catch {
           // If not found in API, try Redux or local DB
           const found = assignments.find(a => a._id === aid) || 
                         db.assignments.find(a => a._id === aid);

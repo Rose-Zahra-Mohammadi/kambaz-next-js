@@ -2,7 +2,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import * as db from "../../../Database";
 import * as client from "../../client";
 import { BsGripVertical, BsCaretRightFill } from "react-icons/bs"; 
 import { FaPenToSquare, FaTrash } from "react-icons/fa6";
@@ -10,7 +9,7 @@ import { IoEllipsisVertical } from "react-icons/io5";
 import { Button, Dropdown, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem, DropdownItem, Modal } from "react-bootstrap";
 import LessonControlButtons from "../Modules/LessonControlButtons";
 import AssignmentControlButtons from "./AssignmentControlButtons";
-import { deleteAssignment, setAssignments } from "./reducer";
+import { setAssignments } from "./reducer";
 import { RootState } from "../../../store";
 
 type Assignment = {
