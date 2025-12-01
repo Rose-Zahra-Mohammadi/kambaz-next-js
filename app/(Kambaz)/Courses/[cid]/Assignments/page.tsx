@@ -1,15 +1,16 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as db from "../../../Database";
+import * as client from "../../client";
 import { BsGripVertical, BsCaretRightFill } from "react-icons/bs"; 
 import { FaPenToSquare, FaTrash } from "react-icons/fa6";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { Button, Dropdown, DropdownMenu, DropdownToggle, ListGroup, ListGroupItem, DropdownItem, Modal } from "react-bootstrap";
 import LessonControlButtons from "../Modules/LessonControlButtons";
 import AssignmentControlButtons from "./AssignmentControlButtons";
-import { deleteAssignment } from "./reducer";
+import { deleteAssignment, setAssignments } from "./reducer";
 import { RootState } from "../../../store";
 
 type Assignment = {
@@ -38,37 +39,21 @@ export default function Assignments() {
   const dispatch = useDispatch();
   const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
   const isFaculty = currentUser?.role === "FACULTY";
-  const reduxAssignments = useSelector((state: RootState) => state.assignmentReducer.assignments);
-  const dbAssignments = db.assignments.filter(a => a.course === cid);
-  const reduxFiltered = reduxAssignments.filter(a => a.course === cid);
-  
-  // Get all assignment IDs that exist in Redux (including deleted ones from initial state)
-  const reduxAssignmentIds = new Set(reduxAssignments.map(a => a._id));
-  const initialReduxIds = new Set(db.assignments.map(a => a._id));
-  
-  // Combine assignments: prioritize Redux (updated) assignments, then add DB assignments that don't exist in Redux
-  // But exclude DB assignments that were deleted from Redux (were in initial state but no longer in Redux)
-  // Create a map to ensure Redux assignments override DB assignments
-  const assignmentMap = new Map<string, Assignment>();
-  
-  // First, add all Redux assignments (these are the most up-to-date)
-  reduxFiltered.forEach(assignment => {
-    assignmentMap.set(assignment._id || "", assignment);
-  });
-  
-  // Then, add DB assignments only if they don't exist in Redux and weren't deleted
-  dbAssignments.forEach(dbAssignment => {
-    const wasInInitialState = initialReduxIds.has(dbAssignment._id || "");
-    const isStillInRedux = reduxAssignmentIds.has(dbAssignment._id || "");
-    const isNotInMap = !assignmentMap.has(dbAssignment._id || "");
-    
-    // Only add from DB if: it wasn't in initial state, OR it's still in Redux, OR it's a new DB assignment
-    if (isNotInMap && (!wasInInitialState || isStillInRedux)) {
-      assignmentMap.set(dbAssignment._id || "", dbAssignment);
+  const assignments = useSelector((state: RootState) => state.assignmentReducer.assignments)
+    .filter(a => a.course === cid);
+
+  const fetchAssignments = async () => {
+    try {
+      const fetchedAssignments = await client.fetchAssignmentsForCourse(cid as string);
+      dispatch(setAssignments(fetchedAssignments));
+    } catch (error) {
+      console.error("Failed to fetch assignments:", error);
     }
-  });
-  
-  const assignments: Assignment[] = Array.from(assignmentMap.values());
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [cid]);
   
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);
@@ -81,11 +66,18 @@ export default function Assignments() {
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (assignmentToDelete) {
-      dispatch(deleteAssignment(assignmentToDelete));
-      setShowDeleteDialog(false);
-      setAssignmentToDelete(null);
+      try {
+        await client.deleteAssignment(assignmentToDelete);
+        // Refresh assignments from server
+        await fetchAssignments();
+        setShowDeleteDialog(false);
+        setAssignmentToDelete(null);
+      } catch (error) {
+        console.error("Failed to delete assignment:", error);
+        alert("Failed to delete assignment. Please try again.");
+      }
     }
   };
 

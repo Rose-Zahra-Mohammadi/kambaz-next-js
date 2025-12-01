@@ -3,8 +3,9 @@
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import { addAssignment, deleteAssignment, updateAssignment } from "../reducer";
+import { addAssignment, deleteAssignment, updateAssignment, setAssignments } from "../reducer";
 import * as db from "../../../../Database"
+import * as client from "../../../client";
 import { FormControl, FormLabel, FormSelect, FormCheck, Button } from "react-bootstrap";
 import { RootState } from "../../../../store";
 
@@ -34,14 +35,27 @@ export default function AssignmentEditor() {
   );
 
   useEffect(() => {
-    const found = assignments.find(a => a._id === aid) || 
-                  db.assignments.find(a => a._id === aid);
-    if (found) {
-      setAssignment(found);
-    }
+    const loadAssignment = async () => {
+      if (aid && aid !== "new") {
+        try {
+          const fetchedAssignment = await client.fetchAssignmentById(aid as string);
+          if (fetchedAssignment) {
+            setAssignment(fetchedAssignment);
+          }
+        } catch (error) {
+          // If not found in API, try Redux or local DB
+          const found = assignments.find(a => a._id === aid) || 
+                        db.assignments.find(a => a._id === aid);
+          if (found) {
+            setAssignment(found);
+          }
+        }
+      }
+    };
+    loadAssignment();
   }, [aid, assignments]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!isFaculty) return; // block students
 
     const assignmentToSave = {
@@ -56,19 +70,26 @@ export default function AssignmentEditor() {
       untilDate: (assignment as any).untilDate || "",
     };
 
-    // Check if assignment already exists in Redux or database
-    const existingInRedux = assignments.find(a => a._id === assignmentToSave._id);
-    const existingInDb = db.assignments.find(a => a._id === assignmentToSave._id);
-    
-    if (existingInRedux || existingInDb) {
-      // Existing assignment - update it
-      dispatch(updateAssignment(assignmentToSave));
-    } else {
-      // New assignment - add it
-      dispatch(addAssignment(assignmentToSave));
+    try {
+      // Check if assignment already exists
+      const existingInRedux = assignments.find(a => a._id === assignmentToSave._id);
+      const existingInDb = db.assignments.find(a => a._id === assignmentToSave._id);
+      
+      if (existingInRedux || existingInDb) {
+        // Existing assignment - update it
+        await client.updateAssignment(assignmentToSave._id, assignmentToSave);
+      } else {
+        // New assignment - create it
+        await client.createAssignment(cid as string, assignmentToSave);
+      }
+      // Refresh assignments list after save
+      const updatedAssignments = await client.fetchAssignmentsForCourse(cid as string);
+      dispatch(setAssignments(updatedAssignments));
+      router.push(`/Courses/${cid}/Assignments`);
+    } catch (error) {
+      console.error("Failed to save assignment:", error);
+      alert("Failed to save assignment. Please try again.");
     }
-
-    router.push(`/Courses/${cid}/Assignments`);
   }
   
   if (!assignment) {

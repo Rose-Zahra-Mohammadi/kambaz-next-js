@@ -37,15 +37,16 @@ export default function Modules() {
   const isFaculty = currentUser?.role === "FACULTY";
   const dispatch = useDispatch();
 
+  const fetchModules = async () => {
+    try {
+      const fetchedModules = await client.fetchModulesForCourse(cid as string);
+      dispatch(setModules(fetchedModules));
+    } catch (error) {
+      console.error("Failed to fetch modules:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchModules = async () => {
-      try {
-        const fetchedModules = await client.fetchModulesForCourse(cid as string);
-        dispatch(setModules(fetchedModules));
-      } catch (error) {
-        console.error("Failed to fetch modules:", error);
-      }
-    };
     fetchModules();
   }, [cid, dispatch]);
 
@@ -55,8 +56,9 @@ export default function Modules() {
       <ModulesControls  moduleName={moduleName} setModuleName={setModuleName} 
       addModule={async ()=>{
         try {
-          const newModule = await client.createModule(cid as string, { name: moduleName, course: cid });
-          dispatch(addModule(newModule));
+          await client.createModule(cid as string, { name: moduleName, course: cid });
+          // Refresh modules from server to ensure persistence
+          await fetchModules();
           setModuleName("");
         } catch (error) {
           console.error("Failed to create module:", error);
@@ -66,7 +68,7 @@ export default function Modules() {
         <br /><br /><br /><br />
       <ListGroup className="rounded-0" id="wd-modules">
         {modules
-          .filter((module: Module) => module.course === cid)
+          .filter((module: Module) => String(module.course) === String(cid))
           .map((module: Module) => (
             <ListGroupItem key={module._id || module.id || module.name} className="wd-module p-0 mb-5 fs-5 border-gray">
               <div className="wd-title p-3 ps-2 bg-secondary">
@@ -82,7 +84,8 @@ export default function Modules() {
                               try {
                                 const updatedModule = { ...module, editing: false };
                                 await client.updateModule(cid as string, updatedModule);
-                                dispatch(updateModuleAction(updatedModule));
+                                // Refresh modules from server to ensure persistence
+                                await fetchModules();
                               } catch (error) {
                                 console.error("Failed to update module:", error);
                                 alert("Failed to update module. Please try again.");
@@ -97,7 +100,8 @@ export default function Modules() {
                     if (!isFaculty) return;
                     try {
                       await client.deleteModule(cid as string, moduleId);
-                      dispatch(deleteModuleAction(moduleId));
+                      // Refresh modules from server to ensure persistence
+                      await fetchModules();
                     } catch (error) {
                       console.error("Failed to delete module:", error);
                       alert("Failed to delete module. Please try again.");

@@ -20,7 +20,7 @@ export default function Dashboard() {
     number: "New Number",
     startDate: "2023-09-10",
     endDate: "2023-12-15",
-    image: "/images/reactjs.jpg",
+    image: "",
     description: "New Description",
   });
   const fetchCourses = async () => {
@@ -49,9 +49,10 @@ export default function Dashboard() {
       // Remove _id before sending - server will generate it
       const { _id, ...courseToSend } = course;
       console.log("Creating course with data:", courseToSend);
-      const newCourse = await client.createCourse(courseToSend);
-      console.log("Course created successfully:", newCourse);
-      dispatch(setCourses([ ...courses, newCourse ]));
+      await client.createCourse(courseToSend);
+      // Refresh courses and enrollments from server to ensure persistence
+      await fetchCourses();
+      await fetchEnrollments();
       // Reset form
       setCourse({
         _id: crypto.randomUUID(),
@@ -59,7 +60,7 @@ export default function Dashboard() {
         number: "New Number",
         startDate: "2023-09-10",
         endDate: "2023-12-15",
-        image: "/images/reactjs.jpg",
+        image: "",
         description: "New Description",
       });
     } catch (error: any) {
@@ -91,7 +92,7 @@ export default function Dashboard() {
     visibleCourses = courses.filter(course => isEnrolled(course._id));
   }
 
-  const toggleEnrollment = () => setShowAll(prev => !prev);
+  // Removed toggleEnrollment - now using separate buttons
 
   const handleEnroll = async (courseId: string) => {
     if (!currentUser) return;
@@ -107,7 +108,7 @@ export default function Dashboard() {
   const handleUnenroll = async (courseId: string) => {
     if (!currentUser) return;
     try {
-      await client.unenrollFromCourse(currentUser._id, courseId);
+      await client.unenrollFromCourse(courseId);
       dispatch(unenrollCourse({ userId: currentUser._id, courseId }));
     } catch (error) {
       console.error("Failed to unenroll:", error);
@@ -143,9 +144,20 @@ export default function Dashboard() {
     <div id="wd-dashboard">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h1 id="wd-dashboard-title">Dashboard</h1>
-        <Button variant="primary" onClick={toggleEnrollment}>
-          Enrollments
-        </Button>
+        <div className="d-flex gap-2">
+          <Button 
+            variant={!showAll ? "primary" : "outline-primary"}
+            onClick={() => setShowAll(false)}
+          >
+            My Courses
+          </Button>
+          <Button 
+            variant={showAll ? "primary" : "outline-primary"}
+            onClick={() => setShowAll(true)}
+          >
+            All Courses
+          </Button>
+        </div>
       </div>
       <hr />
 
@@ -161,7 +173,35 @@ export default function Dashboard() {
             </button>
             <button
               className="btn btn-warning float-end me-2"
-              onClick={() => dispatch(updateCourse(course))}
+              onClick={async () => {
+                // Check if this is an existing course (exists in courses array)
+                const existingCourse = courses.find(c => c._id === course._id);
+                if (!existingCourse) {
+                  alert("Please select a course to edit first by clicking 'Edit' on a course card.");
+                  return;
+                }
+                try {
+                  const { _id, ...courseToUpdate } = course;
+                  await client.updateCourse(_id, courseToUpdate);
+                  // Refresh courses from server to ensure persistence
+                  await fetchCourses();
+                  // Reset form
+                  setCourse({
+                    _id: crypto.randomUUID(),
+                    name: "New Course",
+                    number: "New Number",
+                    startDate: "2023-09-10",
+                    endDate: "2023-12-15",
+                    image: "",
+                    description: "New Description",
+                  });
+                  alert("Course updated successfully!");
+                } catch (error: any) {
+                  console.error("Failed to update course:", error);
+                  const errorMessage = error.response?.data?.message || error.message || "Failed to update course";
+                  alert(`Failed to update course: ${errorMessage}`);
+                }
+              }}
             >
               Update
             </button>
@@ -180,11 +220,33 @@ export default function Dashboard() {
             onChange={(e) => setCourse({ ...course, description: e.target.value })}
           />
           <FormControl
-            placeholder="Image URL (e.g., /images/reactjs.jpg)"
+            placeholder="Image URL (e.g., /images/reactjs.jpg or https://example.com/image.jpg)"
             value={course.image || ""}
             className="mb-2"
             onChange={(e) => setCourse({ ...course, image: e.target.value })}
           />
+          {course.image && (
+            <div className="mb-2">
+              <small className="text-muted d-block mb-1">Image Preview:</small>
+              <div className="mt-1" style={{ maxWidth: "200px", maxHeight: "150px", overflow: "hidden", border: "1px solid #ddd", borderRadius: "4px", backgroundColor: "#f5f5f5" }}>
+                <img 
+                  src={course.image} 
+                  alt="Course preview" 
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                  onError={(e: any) => {
+                    e.target.style.display = "none";
+                    const errorDiv = e.target.parentElement?.querySelector('.image-error');
+                    if (errorDiv) {
+                      (errorDiv as HTMLElement).style.display = "block";
+                    }
+                  }}
+                />
+                <div className="image-error" style={{ display: "none", padding: "20px", textAlign: "center", color: "#999", fontSize: "12px" }}>
+                  Invalid image URL
+                </div>
+              </div>
+            </div>
+          )}
           <hr />
         </>
       )}
@@ -206,7 +268,16 @@ export default function Dashboard() {
                       if (!enrolled && !isFaculty) e.preventDefault();
                     }}
                   >
-                    <CardImg variant="top" src={course.image} width="100%" height={220} style={{ objectFit: "cover" }} />
+                    <CardImg 
+                      variant="top" 
+                      src={course.image || "/images/reactjs.jpg"} 
+                      width="100%" 
+                      height={220} 
+                      style={{ objectFit: "cover" }} 
+                      onError={(e: any) => {
+                        e.target.src = "/images/reactjs.jpg";
+                      }}
+                    />
                     <CardBody>
                       <CardTitle className="wd-dashboard-course-title text-nowrap overflow-hidden">
                         {course.name}
@@ -240,7 +311,20 @@ export default function Dashboard() {
                             Edit
                           </button>
                           <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); dispatch(deleteCourse(course._id)); }}
+                            onClick={async (e) => { 
+                              e.preventDefault(); 
+                              e.stopPropagation(); 
+                              if (confirm("Are you sure you want to delete this course?")) {
+                                try {
+                                  await client.deleteCourse(course._id);
+                                  // Refresh courses from server to ensure persistence
+                                  await fetchCourses();
+                                } catch (error) {
+                                  console.error("Failed to delete course:", error);
+                                  alert("Failed to delete course. Please try again.");
+                                }
+                              }
+                            }}
                             className="btn btn-danger"
                           >
                             Delete

@@ -39,9 +39,12 @@
             updateAssignment: (state, { payload: assignment }) => {
                 state.assignments = state.assignments.map((a) => 
                 a._id === assignment._id ? assignment : a);
-            }
             },
-        });
-    export const { addAssignment, deleteAssignment, updateAssignment} = 
+            setAssignments: (state, { payload: assignments }) => {
+                state.assignments = assignments;
+            },
+        },
+    });
+    export const { addAssignment, deleteAssignment, updateAssignment, setAssignments} = 
     assignmentsSlice.actions;
     export default assignmentsSlice.reducer;
