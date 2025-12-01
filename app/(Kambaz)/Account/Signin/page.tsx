@@ -22,10 +22,12 @@ export default function Signin() {
  const router = useRouter();
  const signin = async () => {
    setError("");
-   const trimmedUsername = credentials.username?.trim() || "";
-   const trimmedPassword = credentials.password?.trim() || "";
+   const trimmedCredentials = {
+     username: credentials.username?.trim() || "",
+     password: credentials.password?.trim() || ""
+   };
    
-   const user = await client.signin(credentials);
+   const user = await client.signin(trimmedCredentials);
    
    if (!user) {
      setError("Invalid username or password");

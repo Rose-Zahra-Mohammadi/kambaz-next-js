@@ -36,13 +36,14 @@ export default function Profile() {
     dispatch(setCurrentUser(null));
     router.push("/Account/Signin");
   };
-useEffect(() => {
-  if (!currentUser) {
-    router.push("/Account/Signin");
-    return;
-  }
-  setProfile(currentUser);
-}, [currentUser, router]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      router.push("/Account/Signin");
+      return;
+    }
+    setProfile(currentUser);
+  }, [currentUser, router]);
 
 
   return (

@@ -57,7 +57,7 @@ export default function Users() {
         Users
       </button>
      <h3>Users</h3>
-     <FormControl onChange={(e) => filterUsersByName(e.target.value)}
+     <FormControl value={name} onChange={(e) => filterUsersByName(e.target.value)}
      className="float-start w-25 me-2 wd-filter-by-name" />
      <select value={role} onChange={(e) =>filterUsersByRole(e.target.value)}
               className="form-select float-start w-25 wd-select-role" >
