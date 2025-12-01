@@ -13,7 +13,9 @@ export default function PeopleDetails({ uid, onClose }: { uid: string | null; on
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(false);
   const saveUser = async () => {
-    const [firstName, lastName] = name.split(" ");
+    const nameParts = name.trim().split(/\s+/);
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
     const updatedUser = { ...user, firstName, lastName };
     await client.updateUser(updatedUser);
     setUser(updatedUser);
@@ -38,18 +40,24 @@ export default function PeopleDetails({ uid, onClose }: { uid: string | null; on
         <IoCloseSharp className="fs-1" /> </button>
       <div className="text-center mt-2"> <FaUserCircle className="text-secondary me-2 fs-1" /> </div><hr />
       <div className="text-danger fs-4 wd-name">         {!editing && (
-        <FaPencil onClick={() => setEditing(true)}
+        <FaPencil onClick={() => {
+          setName(`${user.firstName || ""} ${user.lastName || ""}`.trim());
+          setEditing(true);
+        }}
           className="float-end fs-5 mt-2 wd-edit" />)}
         {editing && (
           <FaCheck onClick={() => saveUser()}
             className="float-end fs-5 mt-2 me-2 wd-save" />)}
         {!editing && (
           <div className="wd-name"
-            onClick={() => setEditing(true)}>
+            onClick={() => {
+              setName(`${user.firstName || ""} ${user.lastName || ""}`.trim());
+              setEditing(true);
+            }}>
             {user.firstName} {user.lastName}</div>)}
         {user && editing && (
           <FormControl className="w-50 wd-edit-name"
-            defaultValue={`${user.firstName} ${user.lastName}`}
+            value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") { saveUser(); }
