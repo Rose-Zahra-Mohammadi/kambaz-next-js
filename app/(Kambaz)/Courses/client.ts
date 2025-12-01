@@ -95,4 +95,9 @@ export const populateCourseImages = async () => {
     const { data } = await axiosWithCredentials.post(`${COURSES_API}/populate-images`);
     return data;
 };
+
+export const fetchUsersForCourse = async (courseId: string) => {
+    const { data } = await axiosWithCredentials.get(`${COURSES_API}/${courseId}/users`);
+    return data;
+};
    
