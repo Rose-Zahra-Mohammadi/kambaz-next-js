@@ -47,6 +47,7 @@ export default function Dashboard() {
   const onAddNewCourse = async () => {
     try {
       // Remove _id before sending - server will generate it
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { _id, ...courseToSend } = course;
       console.log("Creating course with data:", courseToSend);
       await client.createCourse(courseToSend);
