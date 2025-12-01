@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import * as client from "../../client";
 import { BsGripVertical, BsCaretRightFill } from "react-icons/bs"; 
 import { FaPenToSquare, FaTrash } from "react-icons/fa6";
@@ -12,26 +12,6 @@ import AssignmentControlButtons from "./AssignmentControlButtons";
 import { setAssignments } from "./reducer";
 import { RootState } from "../../../store";
 
-type Assignment = {
-  _id?: string;
-  title: string;
-  course: string;
-  points?: number;
-  dueDate?: string;
-  availableDate?: string;
-  untilDate?: string;
-  description?: string;
-}
-
-// Helper function to format date without timezone issues
-const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  // Parse the date string as local date to avoid timezone conversion
-  const [year, month, day] = dateString.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-};
-
 export default function Assignments() {
   const { cid } = useParams();
   const router = useRouter();
@@ -41,18 +21,18 @@ export default function Assignments() {
   const assignments = useSelector((state: RootState) => state.assignmentReducer.assignments)
     .filter(a => a.course === cid);
 
-  const fetchAssignments = async () => {
+  const fetchAssignments = useCallback(async () => {
     try {
       const fetchedAssignments = await client.fetchAssignmentsForCourse(cid as string);
       dispatch(setAssignments(fetchedAssignments));
     } catch (error) {
       console.error("Failed to fetch assignments:", error);
     }
-  };
+  }, [cid, dispatch]);
 
   useEffect(() => {
     fetchAssignments();
-  }, [cid]);
+  }, [fetchAssignments]);
   
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);

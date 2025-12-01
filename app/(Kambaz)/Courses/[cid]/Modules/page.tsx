@@ -1,7 +1,7 @@
 "use client"
-import { addModule, editModule, updateModule as updateModuleAction, deleteModule as deleteModuleAction, setModules }
+import { editModule, updateModule as updateModuleAction, setModules }
   from "./reducer";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import ModulesControls from "./ModulesControls";
 import { FormControl, ListGroup, ListGroupItem } from "react-bootstrap";
@@ -37,18 +37,18 @@ export default function Modules() {
   const isFaculty = currentUser?.role === "FACULTY";
   const dispatch = useDispatch();
 
-  const fetchModules = async () => {
+  const fetchModules = useCallback(async () => {
     try {
       const fetchedModules = await client.fetchModulesForCourse(cid as string);
       dispatch(setModules(fetchedModules));
     } catch (error) {
       console.error("Failed to fetch modules:", error);
     }
-  };
+  }, [cid, dispatch]);
 
   useEffect(() => {
     fetchModules();
-  }, [cid, dispatch]);
+  }, [fetchModules]);
 
   return (
     <div className="wd-modules">

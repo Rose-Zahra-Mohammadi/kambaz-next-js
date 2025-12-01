@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { FaPencil } from "react-icons/fa6";
 import { FaCheck, FaUserCircle } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
@@ -25,14 +25,14 @@ export default function PeopleDetails({ uid, onClose }: { uid: string | null; on
 
 
   const [user, setUser] = useState<any>({});
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     if (!uid) return;
     const user = await client.findUserById(uid);
     setUser(user);
-  };
+  }, [uid]);
   useEffect(() => {
     if (uid) fetchUser();
-  }, [uid]);
+  }, [uid, fetchUser]);
   if (!uid) return null;
   return (
     <div className="wd-people-details position-fixed top-0 end-0 bottom-0 bg-white p-4 shadow w-25">

@@ -47,7 +47,7 @@ export default function Dashboard() {
   const onAddNewCourse = async () => {
     try {
       // Remove _id before sending - server will generate it
-      const { _id: _, ...courseToSend } = course;
+      const { _id, ...courseToSend } = course;
       console.log("Creating course with data:", courseToSend);
       await client.createCourse(courseToSend);
       // Refresh courses and enrollments from server to ensure persistence

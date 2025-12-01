@@ -13,12 +13,6 @@ interface User {
   lastActivity: string;
   totalActivity: string;
 }
-interface Enrollment {
-  _id: string;
-  user: string;
-  course: string;
-
-}
 
 export default function PeopleTable({users = [], fetchUsers}: { users?: any[]; fetchUsers: () => void; }){
   const [ showDetails, setShowDetails] = useState(false);
